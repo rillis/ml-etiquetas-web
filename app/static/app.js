@@ -74,7 +74,7 @@ function desenharLista() {
   const prontas = vendas.length - nf;
   $('#resumo').replaceChildren(
     el('span', { class: 'chip nf' }, `${nf} aguardando NF`),
-    el('span', { class: 'chip pronta' }, `${prontas} prontas para imprimir`),
+    el('span', { class: 'chip pronta' }, prontas === 1 ? '1 pronta para imprimir' : `${prontas} prontas para imprimir`),
   );
 
   const lista = $('#lista');
