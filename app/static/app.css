@@ -1,0 +1,122 @@
+:root {
+  --bg: #f5f6f8; --card: #ffffff; --texto: #1d2129; --sutil: #6b7280; --borda: #e3e6eb;
+  --azul: #0043ff; --azul-claro: #e6edff; --verde: #12a150; --verde-claro: #e3f6eb;
+  --amarelo: #b7791f; --amarelo-claro: #fdf3dc; --vermelho: #d93025; --vermelho-claro: #fde8e6;
+  --sombra: 0 1px 3px rgba(0,0,0,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111318; --card: #1a1d24; --texto: #e7e9ee; --sutil: #9aa1ad; --borda: #2a2e37;
+    --azul: #4d7bff; --azul-claro: #1b2647; --verde: #3ccf7a; --verde-claro: #16301f;
+    --amarelo: #e3b34f; --amarelo-claro: #3a2f14; --vermelho: #ff6b5f; --vermelho-claro: #3d1b18;
+    --sombra: none;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--texto);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: 80px;
+}
+h1 { margin: 0; font-size: 1.4rem; }
+h2 { font-size: 1.15rem; margin: 0 0 .6rem; }
+h3 { font-size: 1rem; margin: 1rem 0 .4rem; }
+.sutil { color: var(--sutil); font-weight: normal; font-size: .9em; }
+.topo {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px; max-width: 960px; margin: 0 auto;
+}
+.topo p { margin: 2px 0 0; }
+main { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+
+.btn {
+  border: 1px solid var(--borda); background: var(--card); color: var(--texto);
+  padding: 8px 14px; border-radius: 8px; font: inherit; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { border-color: var(--azul); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.primario { background: var(--azul); border-color: var(--azul); color: #fff; }
+
+.resumo { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { padding: 6px 12px; border-radius: 999px; font-size: .9rem; font-weight: 600; }
+.chip.nf { background: var(--amarelo-claro); color: var(--amarelo); }
+.chip.pronta { background: var(--verde-claro); color: var(--verde); }
+
+.cabecalho-lista { padding: 4px 2px 8px; }
+.check-todos { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.lista { display: flex; flex-direction: column; gap: 8px; }
+.venda {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: start;
+  background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 12px;
+  box-shadow: var(--sombra); cursor: pointer;
+}
+.venda.travada { opacity: .55; cursor: default; }
+.venda input { margin-top: 3px; width: 18px; height: 18px; }
+.venda .nome { font-weight: 600; }
+.venda .itens { grid-column: 2 / 4; font-size: .92rem; }
+.venda .itens div { overflow-wrap: anywhere; }
+.venda .lado { text-align: right; white-space: nowrap; }
+.venda .meta { grid-column: 2 / 4; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.tag { font-size: .78rem; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.tag.nf { background: var(--amarelo-claro); color: var(--amarelo); }
+.tag.pronta { background: var(--verde-claro); color: var(--verde); }
+.tag.b2b { background: var(--azul-claro); color: var(--azul); }
+.tag.proc { background: var(--borda); color: var(--sutil); }
+.vazio { text-align: center; color: var(--sutil); padding: 32px 0; }
+
+.historico { margin-top: 32px; }
+.hist-item {
+  background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 10px 12px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.hist-item .acoes-hist { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.barra-acao {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--borda);
+  padding: 12px 16px; display: flex; justify-content: flex-end; align-items: center; gap: 12px;
+}
+
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex;
+  align-items: center; justify-content: center; padding: 16px; z-index: 10;
+}
+.modal[hidden] { display: none; }
+.caixa {
+  background: var(--card); border-radius: 12px; padding: 20px; width: 100%; max-width: 440px;
+  max-height: calc(100vh - 32px); overflow: auto;
+}
+.caixa.larga { max-width: 640px; }
+.acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.nota { margin: 12px 0 0; }
+
+.progresso { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.progresso li {
+  display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--borda); border-radius: 8px;
+}
+.progresso .etapa { font-size: .85rem; color: var(--sutil); text-align: right; }
+.progresso .erro { grid-column: 2 / 4; color: var(--vermelho); font-size: .85rem; }
+.icone { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.icone.girando { border: 3px solid var(--azul-claro); border-top-color: var(--azul); animation: gira .8s linear infinite; }
+.icone.ok { background: var(--verde); color: #fff; }
+.icone.falha { background: var(--vermelho); color: #fff; }
+.icone.espera { border: 2px dashed var(--borda); }
+@keyframes gira { to { transform: rotate(360deg); } }
+
+.downloads { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+textarea {
+  width: 100%; font: .9rem/1.4 ui-monospace, Menlo, Consolas, monospace; padding: 10px;
+  border: 1px solid var(--borda); border-radius: 8px; background: var(--bg); color: var(--texto); resize: vertical;
+}
+.alerta { border-radius: 8px; padding: 8px 12px; margin: 8px 0; font-size: .9rem; }
+.alerta.erro { background: var(--vermelho-claro); color: var(--vermelho); }
+.alerta.aviso { background: var(--amarelo-claro); color: var(--amarelo); }
+.estoque ul { margin: 4px 0 8px; padding-left: 18px; }
+.estoque .rotulo { font-weight: 600; font-size: .85rem; }
+
+@media (max-width: 560px) {
+  .venda { grid-template-columns: auto 1fr; }
+  .venda .lado { grid-column: 2; text-align: left; }
+  .venda .itens, .venda .meta { grid-column: 1 / 3; }
+}

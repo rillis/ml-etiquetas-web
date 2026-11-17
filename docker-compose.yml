@@ -1,0 +1,13 @@
+services:
+  ml-etiquetas-web:
+    build: .
+    image: ml-etiquetas-web:latest
+    container_name: ml-etiquetas-web
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    ports:
+      - "51015:8000"
+    volumes:
+      - ./data:/app/data
+      - ${MLJRF_DATA_DIR:?Defina MLJRF_DATA_DIR no .env}:/app/mljrf:ro

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Etiquetas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏷️</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <div>
+      <h1>Etiquetas</h1>
+      <p id="atualizado" class="sutil">Carregando…</p>
+    </div>
+    <button id="btn-atualizar" class="btn">Atualizar</button>
+  </header>
+
+  <main>
+    <section class="resumo" id="resumo"></section>
+
+    <section>
+      <div class="cabecalho-lista">
+        <label class="check-todos"><input type="checkbox" id="check-todos" checked> Todas</label>
+      </div>
+      <div id="lista" class="lista"></div>
+      <p id="vazio" class="vazio" hidden>Nenhuma venda aguardando NF ou pronta para imprimir.</p>
+    </section>
+
+    <section class="historico">
+      <h2>Histórico <span class="sutil">(últimos 30 dias)</span></h2>
+      <div id="historico"></div>
+    </section>
+  </main>
+
+  <div class="barra-acao" id="barra-acao">
+    <span id="selecionadas" class="sutil"></span>
+    <button id="btn-processar" class="btn primario" disabled>Processar</button>
+  </div>
+
+  <!-- Confirmação -->
+  <div class="modal" id="modal-confirmar" hidden>
+    <div class="caixa">
+      <h2>Processar vendas?</h2>
+      <p id="confirmar-texto"></p>
+      <div class="acoes">
+        <button class="btn" data-fechar>Cancelar</button>
+        <button class="btn primario" id="btn-confirmar">Processar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Processando -->
+  <div class="modal" id="modal-processando" hidden>
+    <div class="caixa larga">
+      <h2 id="proc-titulo">Processando…</h2>
+      <p class="sutil" id="proc-sub"></p>
+      <ul class="progresso" id="proc-lista"></ul>
+      <p class="sutil nota">Pode fechar esta aba: o processamento continua no servidor.</p>
+    </div>
+  </div>
+
+  <!-- Resultado -->
+  <div class="modal" id="modal-resultado" hidden>
+    <div class="caixa larga">
+      <h2 id="res-titulo">Pronto</h2>
+      <div class="downloads" id="res-downloads"></div>
+      <div id="res-erros"></div>
+      <h3>Mensagem</h3>
+      <textarea id="res-mensagem" readonly rows="8"></textarea>
+      <div id="res-estoque"></div>
+      <div id="res-avisos"></div>
+      <div class="acoes">
+        <button class="btn" id="btn-copiar">Copiar mensagem</button>
+        <button class="btn primario" id="btn-fechar-resultado">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
