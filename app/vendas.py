@@ -2,7 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
-from app import config
+from app import config, estado
 
 NF_PENDENTE = 'nf_pendente'
 PRONTA = 'pronta'
@@ -35,8 +35,21 @@ def nome_destinatario(envio, pedido):
     return nome.title()
 
 
+def ja_processadas():
+    """Vendas que já saíram com etiqueta em algum lote do histórico. O ML às vezes demora
+    para marcar o envio como impresso, e elas não devem voltar para a lista nesse meio-tempo."""
+    ids = set()
+    if config.OUTPUT_DIR.exists():
+        for pasta in config.OUTPUT_DIR.iterdir():
+            r = estado.ler_json(pasta / 'resultado.json') or {}
+            ids.update(str(v['venda']) for v in r.get('vendas') or [])
+    return ids
+
+
 def listar(ml, dias=None):
-    """Lista as vendas aguardando NF (invoice_pending) ou prontas para imprimir (ready_to_print)."""
+    """Lista as vendas aguardando NF (invoice_pending) ou prontas para imprimir (ready_to_print),
+    menos as que já foram processadas."""
+    processadas = ja_processadas()
     por_envio = {}
     for pedido in _pedidos_pagos(ml, dias or config.DIAS_BUSCA):
         envio_id = (pedido.get('shipping') or {}).get('id')
@@ -61,6 +74,8 @@ def listar(ml, dias=None):
         if (e.get('logistic') or {}).get('type') == 'fulfillment':
             continue
         p0 = pedidos[0]
+        if str(p0.get('pack_id') or p0['id']) in processadas:
+            continue
         entrega = ((e.get('lead_time') or {}).get('estimated_delivery_time') or {}).get('date')
         vendas.append({
             'venda': p0.get('pack_id') or p0['id'],
