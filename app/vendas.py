@@ -11,6 +11,9 @@ PAGINA = 50
 # Envios nesses estados não voltam a ficar pendentes: não precisa consultar de novo.
 FINAIS = {'shipped', 'delivered', 'not_delivered', 'cancelled'}
 _finais = set()
+# Anúncios que o Faturador aceita (com dados fiscais). Só guarda os positivos: um anúncio
+# sem dados fiscais volta a ser consultado até alguém corrigir.
+_faturaveis = set()
 
 
 def _pedidos_pagos(ml, dias):
@@ -33,6 +36,24 @@ def nome_destinatario(envio, pedido):
         b = pedido.get('buyer') or {}
         nome = f"{b.get('first_name') or ''} {b.get('last_name') or ''}".strip() or b.get('nickname') or ''
     return nome.title()
+
+
+def _sem_dados_fiscais(ml, item_ids):
+    """Dos anúncios informados, os que o ML recusa para NF-e (sem dados fiscais)."""
+    a_consultar = [i for i in set(item_ids) if i not in _faturaveis]
+
+    def recusado(item_id):
+        try:
+            r = ml.get_or_none(f'/can_invoice/items/{item_id}') or {}
+        except Exception:  # na dúvida não trava a venda; a emissão mostra o erro
+            return False
+        if r.get('status') is False:
+            return True
+        _faturaveis.add(item_id)
+        return False
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        return {i for i, ruim in zip(a_consultar, pool.map(recusado, a_consultar)) if ruim}
 
 
 def ja_processadas():
@@ -90,6 +111,7 @@ def listar(ml, dias=None):
             'b2b': any('b2b' in (p.get('tags') or []) for p in pedidos),
             'itens': [
                 {
+                    'item_id': it['item']['id'],
                     'sku': it['item'].get('seller_sku') or '',
                     'titulo': it['item'].get('title'),
                     'qtd': it['quantity'],
@@ -97,5 +119,9 @@ def listar(ml, dias=None):
                 for p in pedidos for it in p['order_items']
             ],
         })
+    pend_nf = [v for v in vendas if v['situacao'] == NF_PENDENTE]
+    ruins = _sem_dados_fiscais(ml, [it['item_id'] for v in pend_nf for it in v['itens']])
+    for v in vendas:
+        v['sem_dados_fiscais'] = v['situacao'] == NF_PENDENTE and any(it['item_id'] in ruins for it in v['itens'])
     vendas.sort(key=lambda v: v['data'])
     return vendas

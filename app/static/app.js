@@ -16,6 +16,7 @@ const ETAPAS = {
 };
 
 let vendas = [];
+const bloqueada = (v) => v.em_processamento || v.sem_dados_fiscais;
 const marcadas = new Set();
 let jaCarregou = false;
 let pollJob = null;
@@ -55,7 +56,7 @@ async function carregarVendas(forcar = false) {
     vendas = r.vendas;
     for (const v of vendas) {
       const id = String(v.venda);
-      if (v.em_processamento) marcadas.delete(id);
+      if (bloqueada(v)) marcadas.delete(id);
       else if (!jaCarregou || !anteriores.has(id)) marcadas.add(id);  // novas vêm marcadas
     }
     for (const id of [...marcadas]) if (!vendas.some((v) => String(v.venda) === id)) marcadas.delete(id);
@@ -80,7 +81,7 @@ function desenharLista() {
   const lista = $('#lista');
   lista.replaceChildren(...vendas.map((v) => {
     const id = String(v.venda);
-    const travada = v.em_processamento;
+    const travada = bloqueada(v);
     const check = el('input', { type: 'checkbox', disabled: travada, checked: marcadas.has(id) && !travada });
     check.addEventListener('change', () => { check.checked ? marcadas.add(id) : marcadas.delete(id); atualizarBarra(); });
     const card = el('div', { class: 'venda' + (travada ? ' travada' : '') },
@@ -89,9 +90,11 @@ function desenharLista() {
       el('div', { class: 'lado' }, el('div', {}, brl(v.total)), el('div', { class: 'sutil' }, v.entrega ? 'entrega ' + dataCurta(v.entrega) : '')),
       el('div', { class: 'itens' }, v.itens.map((it) => el('div', {}, `${it.qtd}x `, el('strong', {}, it.sku || '(sem SKU)'), el('span', { class: 'sutil' }, ` — ${it.titulo}`)))),
       el('div', { class: 'meta' },
-        el('span', { class: 'tag ' + (v.situacao === 'nf_pendente' ? 'nf' : 'pronta') }, v.situacao === 'nf_pendente' ? 'Aguardando NF' : 'Pronta para imprimir'),
+        v.sem_dados_fiscais
+          ? el('span', { class: 'tag erro' }, 'Anúncio sem dados fiscais')
+          : el('span', { class: 'tag ' + (v.situacao === 'nf_pendente' ? 'nf' : 'pronta') }, v.situacao === 'nf_pendente' ? 'Aguardando NF' : 'Pronta para imprimir'),
         v.b2b ? el('span', { class: 'tag b2b' }, 'B2B') : null,
-        travada ? el('span', { class: 'tag proc' }, 'Em processamento') : null,
+        v.em_processamento ? el('span', { class: 'tag proc' }, 'Em processamento') : null,
         el('span', { class: 'sutil' }, 'vendida ' + horaCurta(v.data)),
       ),
     );
@@ -107,7 +110,7 @@ function desenharLista() {
 }
 
 function selecionaveis() {
-  return vendas.filter((v) => !v.em_processamento);
+  return vendas.filter((v) => !bloqueada(v));
 }
 
 function atualizarBarra() {

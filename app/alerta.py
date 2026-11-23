@@ -48,7 +48,7 @@ def verificar(ml):
         return
     job = processamento.em_andamento()
     em_lote = {v['venda'] for v in job['vendas']} if job else set()
-    pendentes = [v for v in vendas.listar(ml) if v['venda'] not in em_lote]
+    pendentes = [v for v in vendas.listar(ml) if v['venda'] not in em_lote and not v.get('sem_dados_fiscais')]
     ids = [str(v['venda']) for v in pendentes]
     pingar, novo = decidir(ids, estado.ler('alerta', {}), momento)
     estado.gravar('alerta', novo)

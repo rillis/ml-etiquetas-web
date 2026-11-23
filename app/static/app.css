@@ -62,6 +62,7 @@ main { max-width: 960px; margin: 0 auto; padding: 0 16px; }
 .tag.nf { background: var(--amarelo-claro); color: var(--amarelo); }
 .tag.pronta { background: var(--verde-claro); color: var(--verde); }
 .tag.b2b { background: var(--azul-claro); color: var(--azul); }
+.tag.erro { background: var(--vermelho-claro); color: var(--vermelho); }
 .tag.proc { background: var(--borda); color: var(--sutil); }
 .vazio { text-align: center; color: var(--sutil); padding: 32px 0; }
 

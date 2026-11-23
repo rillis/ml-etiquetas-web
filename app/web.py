@@ -67,7 +67,10 @@ def create_app():
             lista, _ = _listar(forcar=True)  # confere com a situação atual antes de emitir
         except MLError as err:
             return jsonify({'erro': str(err)}), 502
-        escolhidas = [v for v in lista if str(v['venda']) in pedidas]
+        pedidas_lista = [v for v in lista if str(v['venda']) in pedidas]
+        escolhidas = [v for v in pedidas_lista if not v.get('sem_dados_fiscais')]
+        if pedidas_lista and not escolhidas:
+            return jsonify({'erro': 'Anúncio sem dados fiscais: corrija o anúncio no ML antes de emitir a NF.'}), 409
         if not escolhidas:
             return jsonify({'erro': 'As vendas selecionadas não estão mais pendentes. Atualize a lista.'}), 409
         try:
