@@ -41,6 +41,7 @@ main { max-width: 960px; margin: 0 auto; padding: 0 16px; }
 .resumo { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .chip { padding: 6px 12px; border-radius: 999px; font-size: .9rem; font-weight: 600; }
 .chip.nf { background: var(--amarelo-claro); color: var(--amarelo); }
+.chip.erro { background: var(--vermelho-claro); color: var(--vermelho); }
 .chip.pronta { background: var(--verde-claro); color: var(--verde); }
 
 .cabecalho-lista { padding: 4px 2px 8px; }
