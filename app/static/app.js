@@ -93,7 +93,8 @@ function desenharLista() {
       el('div', { class: 'itens' }, v.itens.map((it) => el('div', {}, `${it.qtd}x `, el('strong', {}, it.sku || '(sem SKU)'), el('span', { class: 'sutil' }, ` — ${it.titulo}`)))),
       el('div', { class: 'meta' },
         v.sem_dados_fiscais
-          ? el('span', { class: 'tag erro' }, 'Anúncio sem dados fiscais')
+          ? [el('span', { class: 'tag erro' }, 'Anúncio sem dados fiscais'),
+            el('a', { class: 'link-erro', href: `https://myaccount.mercadolivre.com.br/fiscal-information/order/${(v.pedidos || [])[0] || v.venda}`, target: '_blank', rel: 'noopener' }, 'Corrigir ↗')]
           : el('span', { class: 'tag ' + (v.situacao === 'nf_pendente' ? 'nf' : 'pronta') }, v.situacao === 'nf_pendente' ? 'Aguardando NF' : 'Pronta para imprimir'),
         v.b2b ? el('span', { class: 'tag b2b' }, 'B2B') : null,
         v.em_processamento ? el('span', { class: 'tag proc' }, 'Em processamento') : null,
