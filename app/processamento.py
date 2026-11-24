@@ -225,6 +225,27 @@ def rodar(ml):
     log.info('Lote %s concluído', job['id'])
 
 
+def marcar_baixa(pasta, chave, feito):
+    """Anota no resultado do lote que um item do estoque de devoluções já foi baixado
+    (a baixa em si é feita pelo módulo Estoque do ml-app). Devolve a lista atualizada."""
+    caminho = config.OUTPUT_DIR / pasta / 'resultado.json'
+    with estado.trava('baixas'):
+        r = estado.ler_json(caminho)
+        if r is None:
+            return None
+        baixas = [b for b in r.get('baixas') or [] if b != chave]
+        if feito:
+            baixas.append(chave)
+        r['baixas'] = baixas
+        estado.gravar_json(caminho, r)
+    return baixas
+
+
+def baixas_de(pasta):
+    r = estado.ler_json(config.OUTPUT_DIR / pasta / 'resultado.json') or {}
+    return r.get('baixas') or []
+
+
 def historico():
     itens = []
     if config.OUTPUT_DIR.exists():

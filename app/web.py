@@ -81,7 +81,23 @@ def create_app():
 
     @app.get('/api/job')
     def api_job():
-        return jsonify(processamento.job_atual())
+        job = processamento.job_atual()
+        pasta = ((job or {}).get('resultado') or {}).get('pasta')
+        if pasta:
+            job['resultado']['baixas'] = processamento.baixas_de(pasta)
+        return jsonify(job)
+
+    @app.post('/api/baixa')
+    def api_baixa():
+        _exigir_json()
+        dados = request.get_json(silent=True) or {}
+        pasta, chave = str(dados.get('pasta') or ''), str(dados.get('chave') or '')
+        if not RE_PASTA.match(pasta) or not chave or len(chave) > 300:
+            return jsonify({'erro': 'Dados inválidos'}), 400
+        baixas = processamento.marcar_baixa(pasta, chave, bool(dados.get('feito')))
+        if baixas is None:
+            return jsonify({'erro': 'Lote não encontrado'}), 404
+        return jsonify({'baixas': baixas})
 
     @app.post('/api/job/visto')
     def api_job_visto():
